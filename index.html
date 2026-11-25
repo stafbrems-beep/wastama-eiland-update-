@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wastama Eiland — Grote 3D Update</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #060913;
+      --bg-card: rgba(16, 24, 46, 0.65);
+      --border-glow: rgba(99, 179, 237, 0.25);
+      --accent-cyan: #38bdf8;
+      --accent-purple: #a855f7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+      padding: 2rem 1rem;
+    }
+
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.45;
+      animation: float 14s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, var(--accent-cyan), transparent 70%);
+      top: -100px;
+      left: -100px;
+    }
+
+    .orb-2 {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, var(--accent-purple), transparent 70%);
+      bottom: -140px;
+      right: -100px;
+      animation-delay: -5s;
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+      -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.12); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      width: 100%;
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glow);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 2.85rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lead-text {
+      font-size: 1.12rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin-bottom: 2rem;
+    }
+
+    .lead-text strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .timeline-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 1.25rem 1.4rem;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+
+    .timeline-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .timeline-card.past {
+      opacity: 0.75;
+    }
+
+    .timeline-card.future {
+      border-color: rgba(168, 85, 247, 0.4);
+      background: linear-gradient(145deg, rgba(30, 27, 75, 0.65), rgba(15, 23, 42, 0.85));
+    }
+
+    .timeline-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      display: block;
+    }
+
+    .past .timeline-label {
+      color: #f87171;
+    }
+
+    .future .timeline-label {
+      color: #c084fc;
+    }
+
+    .timeline-date {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+
+    .past .timeline-date {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .timeline-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(168, 85, 247, 0.16));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .cta-header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .rocket-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+    }
+
+    .cta-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cta-subtitle {
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      margin-top: 0.15rem;
+    }
+
+    .play-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(90deg, var(--accent-cyan), #6366f1, var(--accent-purple));
+      background-size: 200% auto;
+      color: #ffffff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .play-btn:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px -5px rgba(168, 85, 247, 0.65);
+    }
+
+    .play-btn svg {
+      transition: transform 0.25s ease;
+    }
+
+    .play-btn:hover svg {
+      transform: translateX(4px);
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 2rem 1.4rem;
+        border-radius: 22px;
+      }
+      .timeline-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+  <div class="grid-overlay"></div>
+
+  <main class="container">
+    <div class="badges">
+      <span class="badge">
+        <span class="pulse-dot"></span>
+        Grote 3D Update
+      </span>
+    </div>
+
+    <h1>Wastama Eiland is nog altijd niet beschikbaar</h1>
+
+    <p class="lead-text">
+      Dit komt niet omdat er een fout is, maar omdat er een hele grote update van de game aankomt. 
+      Omdat het een <strong>volledige 3D-game</strong> wordt, duurt het maken hiervan een stuk langer.
+    </p>
+
+    <div class="timeline-grid">
+      <div class="timeline-card past">
+        <span class="timeline-label">Niet haalbaar</span>
+        <div class="timeline-date">Najaar 2026</div>
+        <p class="timeline-desc">De game komt al zeker niet uit in het najaar van 2026.</p>
+      </div>
+
+      <div class="timeline-card future">
+        <span class="timeline-label">Verwacht</span>
+        <div class="timeline-date">Voorjaar 2027</div>
+        <p class="timeline-desc">Wanneer de game precies terugkomt is nog niet met veel zekerheid te zeggen, maar het wordt ergens in het voorjaar van 2027.</p>
+      </div>
+    </div>
+
+    <div class="cta-box">
+      <div class="cta-header">
+        <div class="rocket-icon">🚀</div>
+        <div>
+          <div class="cta-title">Speel tijdens het wachten Space Portal Runner!</div>
+          <div class="cta-subtitle">Probeer ondertussen onze 2D Wastama-game terwijl je wacht op de 3D-versie.</div>
+        </div>
+      </div>
+
+      <a href="https://stafbrems-beep.github.io/space-portal-runner/" target="_blank" rel="noopener noreferrer" class="play-btn">
+        <span>Speel Space Portal Runner (2D)</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+
+    <p class="footer-note">
+      Bedankt voor het wachten — tot op het nieuwe 3D Wastama Eiland!
+    </p>
+  </main>
+
+</body>
+</html>
